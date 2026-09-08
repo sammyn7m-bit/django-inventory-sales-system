@@ -17,7 +17,7 @@ class SupplierCreateView(generic.CreateView):
     model = Supplier
     template_name = 'inventory/suppliers_create.html'
     fields = '__all__'
-    success_url = reverse_lazy('suppliers_list/')
+    success_url = reverse_lazy('supplier_list')
 
 # product list
 class ProductListView(generic.ListView):
@@ -31,7 +31,7 @@ class ProductCreateView(generic.CreateView):
     model = Product
     fields = '__all__'
     template_name = 'inventory/product_form.html'
-    success_url = reverse_lazy('products/')
+    success_url = reverse_lazy('product_list')
 
 # to views a product detail
 class ProductDetailView(generic.DetailView):

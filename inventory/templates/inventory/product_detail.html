@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | Stock&Sales Co.{% endblock %}
+
+{% block content %}
+
+<div class="mb-8">
+    <a href="{% url 'product_list' %}"
+       class="text-sm text-blue-600 hover:text-blue-800">
+        ← Back to Products
+    </a>
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">
+                {{ product.name }}
+            </h1>
+
+            <p class="mt-1 text-sm text-gray-500">
+                SKU: {{ product.sku }}
+            </p>
+        </div>
+
+        {% if product.is_active %}
+            <span class="inline-flex w-fit px-3 py-1 rounded-full
+                         text-sm font-medium bg-green-100 text-green-800">
+                Active
+            </span>
+        {% else %}
+            <span class="inline-flex w-fit px-3 py-1 rounded-full
+                         text-sm font-medium bg-gray-100 text-gray-600">
+                Inactive
+            </span>
+        {% endif %}
+    </div>
+</div>
+
+
+<!-- Product information -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+    <!-- Stock -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <p class="text-sm text-gray-500">Current Stock</p>
+
+        <p class="text-3xl font-bold mt-2
+                  {% if product.stock_on_hand <= product.low_stock_threshold %}
+                      text-red-600
+                  {% else %}
+                      text-green-600
+                  {% endif %}">
+            {{ product.stock_on_hand }}
+        </p>
+
+        <p class="text-xs text-gray-500 mt-2">
+            Low-stock threshold: {{ product.low_stock_threshold }}
+        </p>
+    </div>
+
+
+    <!-- Cost price -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <p class="text-sm text-gray-500">Cost Price</p>
+
+        <p class="text-3xl font-bold text-gray-900 mt-2">
+            {{ product.cost_price }}
+        </p>
+    </div>
+
+
+    <!-- Selling price -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <p class="text-sm text-gray-500">Selling Price</p>
+
+        <p class="text-3xl font-bold text-gray-900 mt-2">
+            {{ product.selling_price }}
+        </p>
+    </div>
+
+</div>
+
+
+<!-- Product details -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+
+    <h2 class="text-xl font-semibold text-gray-900 mb-5">
+        Product Details
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <div>
+            <p class="text-sm text-gray-500">Supplier</p>
+            <p class="font-medium text-gray-900 mt-1">
+                {{ product.supplier.name }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-sm text-gray-500">SKU</p>
+            <p class="font-medium text-gray-900 mt-1">
+                {{ product.sku }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-sm text-gray-500">Bought At</p>
+            <p class="font-medium text-gray-900 mt-1">
+                {{ product.bought_at|date:"M d, Y H:i" }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-sm text-gray-500">Status</p>
+            <p class="font-medium text-gray-900 mt-1">
+                {% if product.is_active %}
+                    Active
+                {% else %}
+                    Inactive
+                {% endif %}
+            </p>
+        </div>
+
+    </div>
+
+    {% if product.description %}
+        <div class="mt-6 pt-6 border-t border-gray-200">
+            <p class="text-sm text-gray-500 mb-2">Description</p>
+
+            <p class="text-gray-700">
+                {{ product.description }}
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+
+
+<!-- Stock actions -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+    <!-- Add stock -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+
+        <h2 class="text-xl font-semibold text-gray-900">
+            Add Stock
+        </h2>
+
+        <p class="text-sm text-gray-500 mt-1">
+            Record newly purchased or received stock.
+        </p>
+
+        <form method="POST"
+              action="{% url 'add-stock' product.pk %}"
+              class="mt-5">
+
+            {% csrf_token %}
+
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Quantity
+            </label>
+
+            <input type="number"
+                   name="qty"
+                   min="1"
+                   required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2
+                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+            <label class="block text-sm font-medium text-gray-700 mb-2 mt-4">
+                Note
+            </label>
+
+            <textarea name="note"
+                      rows="3"
+                      placeholder="Optional note..."
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2
+                             focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+
+            <button type="submit"
+                    class="mt-4 w-full bg-green-600 hover:bg-green-700
+                           text-white font-medium py-2.5 rounded-lg transition">
+                + Add Stock
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- Sell stock -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+
+        <h2 class="text-xl font-semibold text-gray-900">
+            Sell Stock
+        </h2>
+
+        <p class="text-sm text-gray-500 mt-1">
+            Record a sale and reduce available stock.
+        </p>
+
+        <form method="POST"
+              action="{% url 'sell_stock' product.pk %}"
+              class="mt-5">
+
+            {% csrf_token %}
+
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Quantity
+            </label>
+
+            <input type="number"
+                   name="qty"
+                   min="1"
+                   max="{{ product.stock_on_hand }}"
+                   required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2
+                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+            <label class="block text-sm font-medium text-gray-700 mb-2 mt-4">
+                Note
+            </label>
+
+            <textarea name="note"
+                      rows="3"
+                      placeholder="Optional note..."
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2
+                             focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+
+            <button type="submit"
+                    class="mt-4 w-full bg-red-600 hover:bg-red-700
+                           text-white font-medium py-2.5 rounded-lg transition">
+                - Sell Stock
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- Stock movement history -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+    <div class="p-6 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900">
+            Stock Movement History
+        </h2>
+
+        <p class="text-sm text-gray-500 mt-1">
+            Recent stock changes for this product.
+        </p>
+    </div>
+
+    {% if product.movements.all %}
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            Date
+                        </th>
+
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            Type
+                        </th>
+
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            Quantity
+                        </th>
+
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            Note
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200">
+
+                    {% for movement in product.movements.all %}
+
+                        <tr class="hover:bg-gray-50">
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ movement.movement_date|date:"M d, Y H:i" }}
+                            </td>
+
+                            <td class="px-6 py-4">
+
+                                {% if movement.movement_type == "RECEIPT" %}
+
+                                    <span class="px-2.5 py-1 rounded-full text-xs
+                                                 font-medium bg-green-100 text-green-800">
+                                        Receipt
+                                    </span>
+
+                                {% elif movement.movement_type == "SALE" %}
+
+                                    <span class="px-2.5 py-1 rounded-full text-xs
+                                                 font-medium bg-red-100 text-red-800">
+                                        Sale
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="px-2.5 py-1 rounded-full text-xs
+                                                 font-medium bg-blue-100 text-blue-800">
+                                        Adjustment
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td class="px-6 py-4 text-sm font-semibold
+                                {% if movement.qty_change < 0 %}
+                                    text-red-600
+                                {% else %}
+                                    text-green-600
+                                {% endif %}">
+
+                                {% if movement.qty_change > 0 %}+{% endif %}
+                                {{ movement.qty_change }}
+
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ movement.note|default:"—" }}
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+                            <td colspan="4"
+                                class="px-6 py-10 text-center text-sm text-gray-500">
+                                No stock movements yet.
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+        </div>
+
+    {% else %}
+
+        <div class="px-6 py-10 text-center text-sm text-gray-500">
+            No stock movements yet.
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

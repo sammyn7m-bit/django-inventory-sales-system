@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Suppliers | Stock&Sales Co.{% endblock %}
+
+{% block content %}
+
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Suppliers</h1>
+        <p class="mt-1 text-sm text-gray-500">
+            Manage the suppliers that provide your products.
+        </p>
+    </div>
+
+    <a href="{% url 'supplier_create' %}"
+       class="inline-flex items-center justify-center px-4 py-2
+              bg-blue-600 hover:bg-blue-700 text-white
+              text-sm font-medium rounded-lg shadow-sm transition">
+        + Add Supplier
+    </a>
+
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+    {% if suppliers %}
+
+    <div class="overflow-x-auto">
+
+        <table class="min-w-full divide-y divide-gray-200">
+
+            <thead class="bg-gray-50">
+                <tr>
+
+                    <th class="px-6 py-3 text-left text-xs font-semibold
+                               text-gray-500 uppercase tracking-wider">
+                        Supplier
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-semibold
+                               text-gray-500 uppercase tracking-wider">
+                        Email
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-semibold
+                               text-gray-500 uppercase tracking-wider">
+                        Phone
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-semibold
+                               text-gray-500 uppercase tracking-wider">
+                        Products
+                    </th>
+
+                </tr>
+            </thead>
+
+            <tbody class="bg-white divide-y divide-gray-200">
+
+                {% for supplier in suppliers %}
+
+                <tr class="hover:bg-gray-50 transition">
+
+                    <!-- Supplier name -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+
+                        <div class="flex items-center">
+
+                            <div class="h-10 w-10 rounded-full bg-blue-100
+                                        flex items-center justify-center
+                                        text-blue-700 font-semibold">
+
+                                {{ supplier.name|first|upper }}
+
+                            </div>
+
+                            <div class="ml-4">
+
+                                <div class="text-sm font-medium text-gray-900">
+                                    {{ supplier.name }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    <!-- Email -->
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+
+                        {% if supplier.email %}
+                            {{ supplier.email }}
+                        {% else %}
+                            <span class="text-gray-400">
+                                No email
+                            </span>
+                        {% endif %}
+
+                    </td>
+
+                    <!-- Phone -->
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {{ supplier.phone }}
+                    </td>
+
+                    <!-- Products -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+
+                        <span class="inline-flex items-center px-2.5 py-0.5
+                                     rounded-full text-xs font-medium
+                                     bg-blue-100 text-blue-800">
+
+                            {{ supplier.products.count }} product{{ supplier.products.count|pluralize }}
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <!-- Empty state -->
+
+    <div class="text-center py-16 px-6">
+
+        <div class="text-5xl mb-4">
+            🚚
+        </div>
+
+        <h2 class="text-xl font-semibold text-gray-900">
+            No suppliers yet
+        </h2>
+
+        <p class="mt-2 text-sm text-gray-500">
+            Add your first supplier to start managing your inventory sources.
+        </p>
+
+        <a href="{% url 'supplier_create' %}"
+           class="inline-block mt-6 px-4 py-2
+                  bg-blue-600 hover:bg-blue-700
+                  text-white text-sm font-medium
+                  rounded-lg transition">
+
+            Add Your First Supplier
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
