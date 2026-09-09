@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from .models import Supplier, Product
 from django.views import generic
 from .services import add_stock, sell_stock
-
+from .forms import ProductForm, SupplierForm
 
 # supplier list
 class SupplierListView(generic.ListView):
@@ -14,10 +14,26 @@ class SupplierListView(generic.ListView):
 
 # add a supplier
 class SupplierCreateView(generic.CreateView):
-    model = Supplier
+    form_class = SupplierForm
     template_name = 'inventory/suppliers_create.html'
-    fields = '__all__'
     success_url = reverse_lazy('supplier_list')
+
+# supplier update/delete
+class SupplierUpdate(generic.UpdateView):
+    form_class = SupplierForm
+    fields = [
+        "name",
+        "email",
+        "phone",
+    ]
+    template_name = "inventory/suppliers_create.html"
+    success_url = reverse_lazy("supplier_list")
+
+
+class SupplierDelete(generic.DeleteView):
+    model = Supplier
+    template_name = "inventory/supplier_delete.html"
+    success_url = reverse_lazy("supplier_list")
 
 # product list
 class ProductListView(generic.ListView):
@@ -28,8 +44,7 @@ class ProductListView(generic.ListView):
 
 # To create/add a product
 class ProductCreateView(generic.CreateView):
-    model = Product
-    fields = '__all__'
+    form_class = ProductForm
     template_name = 'inventory/product_form.html'
     success_url = reverse_lazy('product_list')
 
@@ -38,6 +53,19 @@ class ProductDetailView(generic.DetailView):
     model = Product
     template_name = "inventory/product_detail.html"
     context_object_name = "product"
+
+# product update
+class ProductUpdate(generic.UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'inventory/product_form.html'
+    success_url = reverse_lazy('product_list')
+
+# product delete
+class ProductDelete(generic.DeleteView):
+    model = Product
+    template_name = 'inventory/product_delete.html'
+    success_url = reverse_lazy('product_list')
 
 # when new products bought add to the stock
 class AddStockView(generic.View):
