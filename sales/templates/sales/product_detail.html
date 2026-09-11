@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | Stock&Sales Co.{% endblock %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto">
+
+    <a href="{% url 'product_catalog' %}"
+       class="text-sm text-blue-600 hover:text-blue-800">
+        ← Back to Products
+    </a>
+
+    <div class="mt-5 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+        <div class="h-64 bg-gray-100 flex items-center justify-center">
+            <span class="text-7xl">📦</span>
+        </div>
+
+        <div class="p-6">
+
+            <div class="flex flex-col sm:flex-row sm:items-start
+                        sm:justify-between gap-4">
+
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">
+                        {{ product.name }}
+                    </h1>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        SKU: {{ product.sku }}
+                    </p>
+                </div>
+
+                {% if product.stock_on_hand > 0 %}
+                    <span class="px-3 py-1 rounded-full
+                                 bg-green-100 text-green-800
+                                 text-sm font-medium">
+                        {{ product.stock_on_hand }} available
+                    </span>
+                {% else %}
+                    <span class="px-3 py-1 rounded-full
+                                 bg-red-100 text-red-800
+                                 text-sm font-medium">
+                        Out of Stock
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <div class="mt-6">
+
+                <h2 class="text-sm font-semibold text-gray-500 uppercase">
+                    Description
+                </h2>
+
+                <p class="mt-2 text-gray-700 leading-relaxed">
+                    {% if product.description %}
+                        {{ product.description }}
+                    {% else %}
+                        No description available.
+                    {% endif %}
+                </p>
+
+            </div>
+
+
+            <div class="mt-8 border-t border-gray-200 pt-6">
+
+                <div class="flex flex-col sm:flex-row
+                            sm:items-center sm:justify-between gap-5">
+
+                    <div>
+                        <p class="text-sm text-gray-500">
+                            Price
+                        </p>
+
+                        <p class="text-3xl font-bold text-blue-600">
+                            KSh {{ product.selling_price }}
+                        </p>
+                    </div>
+
+
+                    {% if product.stock_on_hand > 0 %}
+
+                    <form method="POST"
+                          action="{% url 'add_to_order' product.pk %}"
+                          class="flex items-center gap-3">
+
+                        {% csrf_token %}
+
+                        <input type="number"
+                               name="quantity"
+                               min="1"
+                               max="{{ product.stock_on_hand }}"
+                               value="1"
+                               class="w-24 rounded-lg border-gray-300
+                                      focus:border-blue-500
+                                      focus:ring-blue-500">
+
+                        <button type="submit"
+                                class="px-6 py-3
+                                       bg-blue-600 hover:bg-blue-700
+                                       text-white font-medium
+                                       rounded-lg transition">
+
+                            Add to Order
+
+                        </button>
+
+                    </form>
+
+                    {% else %}
+
+                    <button disabled
+                            class="px-6 py-3
+                                   bg-gray-200 text-gray-500
+                                   font-medium rounded-lg">
+                        Out of Stock
+                    </button>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

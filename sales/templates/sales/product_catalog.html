@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Products | Stock&Sales Co.{% endblock %}
+
+{% block content %}
+
+<div class="space-y-6">
+
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">
+            Shop Products
+        </h1>
+
+        <p class="mt-1 text-sm text-gray-500">
+            Browse our available products and choose what you need.
+        </p>
+    </div>
+
+
+    {% if products %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {% for product in products %}
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200
+                    overflow-hidden hover:shadow-md transition">
+
+            <div class="h-40 bg-gray-100 flex items-center justify-center">
+                <span class="text-5xl">📦</span>
+            </div>
+
+            <div class="p-5">
+
+                <div class="flex items-start justify-between gap-3">
+
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            {{ product.name }}
+                        </h2>
+
+                        <p class="text-xs text-gray-500 mt-1">
+                            SKU: {{ product.sku }}
+                        </p>
+                    </div>
+
+                    {% if product.stock_on_hand > 0 %}
+                        <span class="px-2.5 py-1 rounded-full
+                                     text-xs font-medium
+                                     bg-green-100 text-green-800">
+                            In Stock
+                        </span>
+                    {% else %}
+                        <span class="px-2.5 py-1 rounded-full
+                                     text-xs font-medium
+                                     bg-red-100 text-red-800">
+                            Out of Stock
+                        </span>
+                    {% endif %}
+
+                </div>
+
+
+                <p class="mt-3 text-sm text-gray-600">
+                    {{ product.description|truncatewords:15 }}
+                </p>
+
+
+                <div class="mt-5 flex items-center justify-between">
+
+                    <div>
+                        <p class="text-xs text-gray-500">
+                            Price
+                        </p>
+
+                        <p class="text-xl font-bold text-blue-600">
+                            KSh {{ product.selling_price }}
+                        </p>
+                    </div>
+
+
+                    {% if product.stock_on_hand > 0 %}
+
+                    <a href="{% url 'product_detail' product.pk %}"
+                       class="px-4 py-2.5
+                              bg-blue-600 hover:bg-blue-700
+                              text-white text-sm font-medium
+                              rounded-lg transition">
+                        Choose
+                    </a>
+
+                    {% else %}
+
+                    <span class="px-4 py-2.5
+                                 bg-gray-200 text-gray-500
+                                 text-sm font-medium rounded-lg">
+                        Unavailable
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200
+                px-6 py-16 text-center">
+
+        <div class="text-5xl">
+            📦
+        </div>
+
+        <h2 class="mt-4 text-lg font-semibold text-gray-900">
+            No products available
+        </h2>
+
+        <p class="mt-2 text-sm text-gray-500">
+            There are currently no products available for purchase.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

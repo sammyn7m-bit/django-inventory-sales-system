@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout | Stock&Sales Co.{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">
+            Checkout
+        </h1>
+
+        <p class="mt-1 text-sm text-gray-500">
+            Enter your details to place your order.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+
+        <form method="POST" class="space-y-5">
+
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="p-4 rounded-lg bg-red-100 text-red-800 text-sm">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+
+                <div>
+                    <label for="{{ field.id_for_label }}"
+                           class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.errors %}
+                        <div class="mt-1 text-sm text-red-600">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+            {% endfor %}
+
+            <div class="pt-4 flex items-center justify-between">
+
+                <a href="{% url 'product_catalog' %}"
+                   class="px-4 py-2 text-sm font-medium
+                          text-gray-600 hover:text-gray-900">
+                    ← Back
+                </a>
+
+                <button type="submit"
+                        class="px-6 py-3
+                               bg-blue-600 hover:bg-blue-700
+                               text-white text-sm font-medium
+                               rounded-lg transition">
+                    Place Order
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
