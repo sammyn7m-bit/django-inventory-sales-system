@@ -9,11 +9,11 @@ A robust, Django-based inventory and sales management web application designed t
 - **Stock Management Services:** Automated backend logic that adjusts inventory levels when sales are completed.
 - **Supplier & Customer Management:** Dedicated models to track vendor sourcing and customer profiles.
 
-##  Tech Stack
+## Tech Stack
 
 - **Backend:** Python, Django Web Framework
 - **Database:** SQLite (Development) / PostgreSQL (Production ready)
-- **Frontend:** HTML5, CSS3, Django Templates
+- **Frontend:** HTML5, Bootstrap, Django Templates
 
 ## Core Architecture & Models
 
@@ -25,7 +25,7 @@ Based on the development log, the repository structures data through these core 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com
+   git clone https://github.com/sammyn7m-bit/django-inventory-sales-system
    cd django-inventory-sales-system
    ```
 
@@ -39,9 +39,8 @@ Based on the development log, the repository structures data through these core 
    ```
 
 3. **Install dependencies:**
-   *(Ensure you create a requirements.txt file or list dependencies here)*
    ```bash
-   pip install django
+   pip install -r requirements.txt
    ```
 
 4. **Run database migrations:**
@@ -54,5 +53,5 @@ Based on the development log, the repository structures data through these core 
    ```bash
    python manage.py runserver
    ```
-   Open `http://127.0.0` in your browser to view the application.
+   Open `http://127.0.0.1:8000/` in your browser to view the application.
 
