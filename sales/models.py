@@ -26,6 +26,10 @@ class Order(models.Model):
     order_date = models.DateTimeField(auto_now_add = True)
     status = models.CharField(max_length=20,choices=STATUS_CHOICES, default=DRAFT)
 
+    @property
+    def total(self):
+        return sum(item.subtotal for item in self.items.all())
+
     def __str__(self):
         return f"{self.buyer} - {self.status}"
 
@@ -38,6 +42,10 @@ class OrderItem(models.Model):
     )
     quantity = models.PositiveIntegerField()
     unit_price = models.DecimalField(max_digits = 10, decimal_places = 2)
+
+    @property
+    def subtotal(self):
+        return self.quantity * self.unit_price
 
     def __str__(self):
         return f"{self.product} x {self.quantity} (Order {self.order_id})"

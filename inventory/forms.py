@@ -47,6 +47,7 @@ class ProductForm(forms.ModelForm):
             "selling_price",
             "low_stock_threshold",
             "description",
+            "image",
             "supplier",
             "is_active",
         ]

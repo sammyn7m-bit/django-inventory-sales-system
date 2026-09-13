@@ -4,125 +4,145 @@
 
 {% block content %}
 
-<div class="max-w-4xl mx-auto">
+<div class="max-w-5xl mx-auto space-y-6">
 
-    <a href="{% url 'product_catalog' %}"
-       class="text-sm text-blue-600 hover:text-blue-800">
+    <a
+        href="{% url 'product_catalog' %}"
+        class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+    >
         ← Back to Products
     </a>
 
-    <div class="mt-5 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
 
-        <div class="h-64 bg-gray-100 flex items-center justify-center">
-            <span class="text-7xl">📦</span>
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2">
 
-        <div class="p-6">
+            <!-- Product Image -->
+            <div class="h-[500px] w-full bg-gray-100 overflow-hidden">
 
-            <div class="flex flex-col sm:flex-row sm:items-start
-                        sm:justify-between gap-4">
+                {% if product.image %}
 
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900">
-                        {{ product.name }}
-                    </h1>
+                    <img
+                        src="{{ product.image.url }}"
+                        alt="{{ product.name }}"
+                        class="w-full h-full object-cover"
+                    >
 
-                    <p class="mt-1 text-sm text-gray-500">
-                        SKU: {{ product.sku }}
-                    </p>
-                </div>
-
-                {% if product.stock_on_hand > 0 %}
-                    <span class="px-3 py-1 rounded-full
-                                 bg-green-100 text-green-800
-                                 text-sm font-medium">
-                        {{ product.stock_on_hand }} available
-                    </span>
                 {% else %}
-                    <span class="px-3 py-1 rounded-full
-                                 bg-red-100 text-red-800
-                                 text-sm font-medium">
-                        Out of Stock
-                    </span>
+
+                    <div class="w-full h-full flex items-center justify-center">
+                        <span class="text-8xl">📦</span>
+                    </div>
+
                 {% endif %}
 
             </div>
 
+            <!-- Product Details -->
+            <div class="p-8">
 
-            <div class="mt-6">
-
-                <h2 class="text-sm font-semibold text-gray-500 uppercase">
-                    Description
-                </h2>
-
-                <p class="mt-2 text-gray-700 leading-relaxed">
-                    {% if product.description %}
-                        {{ product.description }}
-                    {% else %}
-                        No description available.
-                    {% endif %}
-                </p>
-
-            </div>
-
-
-            <div class="mt-8 border-t border-gray-200 pt-6">
-
-                <div class="flex flex-col sm:flex-row
-                            sm:items-center sm:justify-between gap-5">
+                <div class="flex items-start justify-between gap-4">
 
                     <div>
                         <p class="text-sm text-gray-500">
-                            Price
+                            SKU: {{ product.sku }}
                         </p>
 
-                        <p class="text-3xl font-bold text-blue-600">
-                            KSh {{ product.selling_price }}
-                        </p>
+                        <h1 class="mt-2 text-3xl font-bold text-gray-900">
+                            {{ product.name }}
+                        </h1>
                     </div>
-
 
                     {% if product.stock_on_hand > 0 %}
 
-                    <form method="POST"
-                          action="{% url 'add_to_order' product.pk %}"
-                          class="flex items-center gap-3">
-
-                        {% csrf_token %}
-
-                        <input type="number"
-                               name="quantity"
-                               min="1"
-                               max="{{ product.stock_on_hand }}"
-                               value="1"
-                               class="w-24 rounded-lg border-gray-300
-                                      focus:border-blue-500
-                                      focus:ring-blue-500">
-
-                        <button type="submit"
-                                class="px-6 py-3
-                                       bg-blue-600 hover:bg-blue-700
-                                       text-white font-medium
-                                       rounded-lg transition">
-
-                            Add to Order
-
-                        </button>
-
-                    </form>
+                        <span class="px-3 py-1 text-sm font-medium bg-green-100 text-green-700 rounded-full">
+                            In Stock
+                        </span>
 
                     {% else %}
 
-                    <button disabled
-                            class="px-6 py-3
-                                   bg-gray-200 text-gray-500
-                                   font-medium rounded-lg">
-                        Out of Stock
-                    </button>
+                        <span class="px-3 py-1 text-sm font-medium bg-red-100 text-red-700 rounded-full">
+                            Out of Stock
+                        </span>
 
                     {% endif %}
 
                 </div>
+
+                <div class="mt-6">
+
+                    <p class="text-3xl font-bold text-gray-900">
+                        KSh {{ product.selling_price|floatformat:2 }}
+                    </p>
+
+                    <p class="mt-2 text-sm text-gray-500">
+                        {{ product.stock_on_hand }} units available
+                    </p>
+
+                </div>
+
+                {% if product.description %}
+
+                    <div class="mt-6">
+
+                        <h2 class="text-sm font-semibold text-gray-900">
+                            Description
+                        </h2>
+
+                        <p class="mt-2 text-gray-600 leading-relaxed">
+                            {{ product.description }}
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+                {% if product.stock_on_hand > 0 %}
+
+                    <form
+                        method="POST"
+                        action="{% url 'add_to_order' product.pk %}"
+                        class="mt-8 space-y-4"
+                    >
+
+                        {% csrf_token %}
+
+                        <div>
+                            <label
+                                for="quantity"
+                                class="block text-sm font-medium text-gray-700"
+                            >
+                                Quantity
+                            </label>
+
+                            <input
+                                type="number"
+                                id="quantity"
+                                name="quantity"
+                                min="1"
+                                max="{{ product.stock_on_hand }}"
+                                value="1"
+                                required
+                                class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-gray-900 focus:outline-none"
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
+                        >
+                            Add to Order
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <div class="mt-8 bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 text-sm">
+                        This product is currently out of stock.
+                    </div>
+
+                {% endif %}
 
             </div>
 

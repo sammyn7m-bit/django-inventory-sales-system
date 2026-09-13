@@ -4,81 +4,171 @@
 
 {% block content %}
 
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl mx-auto"><div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">
+        Order #{{ order.id }}
+    </h1>
 
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold">Order #{{ order.id }}</h1>
-        <p class="text-gray-500 mt-2">
-            Thank you, {{ order.buyer.name }}.
-        </p>
-    </div>
+    <p class="text-gray-500 mt-2">
+        Thank you, {{ order.buyer.name }}.
+    </p>
+</div>
 
-    <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
 
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold">Order Details</h2>
+    <div class="flex justify-between items-center mb-6">
 
-            <span class="px-3 py-1 rounded-full text-sm font-medium
-                {% if order.status == 'paid' %}
-                    bg-green-100 text-green-800
-                {% elif order.status == 'cancelled' %}
-                    bg-red-100 text-red-800
-                {% else %}
-                    bg-yellow-100 text-yellow-800
-                {% endif %}
-            ">
-                {{ order.get_status_display }}
-            </span>
-        </div>
-
-        {% for item in order.items.all %}
-
-        <div class="flex justify-between border-b py-4">
-
-            <div>
-                <h3 class="font-semibold">
-                    {{ item.product.name }}
-                </h3>
-
-                <p class="text-sm text-gray-500">
-                    {{ item.quantity }} × KSh {{ item.unit_price }}
-                </p>
-            </div>
-
-            <div class="font-semibold">
-                KSh {{ item.quantity|floatformat:2|add:"0" }}
-            </div>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
-
-        <h2 class="text-xl font-semibold mb-4">
-            Customer Information
+        <h2 class="text-xl font-semibold text-gray-900">
+            Order Details
         </h2>
 
-        <p><strong>Name:</strong> {{ order.buyer.name }}</p>
-        <p><strong>Phone:</strong> {{ order.buyer.phone }}</p>
-
-        {% if order.buyer.email %}
-            <p><strong>Email:</strong> {{ order.buyer.email }}</p>
-        {% endif %}
-
-        {% if order.buyer.address %}
-            <p><strong>Address:</strong> {{ order.buyer.address }}</p>
-        {% endif %}
+        <span class="px-3 py-1 rounded-full text-sm font-medium
+            {% if order.status == 'paid' %}
+                bg-green-100 text-green-800
+            {% elif order.status == 'cancelled' %}
+                bg-red-100 text-red-800
+            {% else %}
+                bg-yellow-100 text-yellow-800
+            {% endif %}
+        ">
+            {{ order.get_status_display }}
+        </span>
 
     </div>
 
-    <a href="{% url 'product_catalog' %}"
-       class="inline-block bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700">
-        Continue Shopping
-    </a>
+    {% for item in order.items.all %}
+
+    <div class="flex justify-between items-center
+                border-b border-gray-200 py-4">
+
+        <div>
+
+            <h3 class="font-semibold text-gray-900">
+                {{ item.product.name }}
+            </h3>
+
+            <p class="text-sm text-gray-500 mt-1">
+                {{ item.quantity }} × KSh {{ item.unit_price|floatformat:2 }}
+            </p>
+
+        </div>
+
+        <div class="font-semibold text-gray-900">
+            KSh {{ item.subtotal|floatformat:2 }}
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="py-8 text-center text-gray-500">
+        This order has no items.
+    </div>
+
+    {% endfor %}
+
+    <div class="flex justify-between items-center pt-6">
+
+        <span class="text-lg font-semibold text-gray-700">
+            Order Total
+        </span>
+
+        <span class="text-2xl font-bold text-blue-600">
+            KSh {{ order.total|floatformat:2 }}
+        </span>
+
+    </div>
 
 </div>
 
-{% endblock %}
+{% if order.status == 'draft' %}
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+
+    <h2 class="text-xl font-semibold text-gray-900 mb-2">
+        Payment
+    </h2>
+
+    <p class="text-sm text-gray-500 mb-5">
+        Confirm payment to complete this order.
+    </p>
+
+    <form method="POST" action="{% url 'pay_order' order.id %}">
+
+        {% csrf_token %}
+
+        <button type="submit"
+                class="w-full sm:w-auto px-6 py-3
+                       bg-green-600 hover:bg-green-700
+                       text-white font-medium rounded-lg transition">
+
+            Pay Order — KSh {{ order.total|floatformat:2 }}
+
+        </button>
+
+    </form>
+
+</div>
+
+{% elif order.status == 'paid' %}
+
+<div class="bg-green-50 border border-green-200
+            rounded-xl p-5 mb-6">
+
+    <p class="font-semibold text-green-800">
+        ✓ Payment completed
+    </p>
+
+    <p class="text-sm text-green-700 mt-1">
+        Payment was completed.
+    </p>
+
+</div>
+
+{% endif %}
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+
+    <h2 class="text-xl font-semibold mb-4">
+        Customer Information
+    </h2>
+
+    <div class="space-y-2 text-gray-700">
+
+        <p>
+            <strong>Name:</strong>
+            {{ order.buyer.name }}
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
+            {{ order.buyer.phone }}
+        </p>
+
+        {% if order.buyer.email %}
+            <p>
+                <strong>Email:</strong>
+                {{ order.buyer.email }}
+            </p>
+        {% endif %}
+
+        {% if order.buyer.address %}
+            <p>
+                <strong>Address:</strong>
+                {{ order.buyer.address }}
+            </p>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<a href="{% url 'product_catalog' %}"
+   class="inline-block bg-blue-600 text-white
+          px-5 py-3 rounded-lg hover:bg-blue-700">
+
+    Continue Shopping
+
+</a>
+
+</div>{% endblock %}

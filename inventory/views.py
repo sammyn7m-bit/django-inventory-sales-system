@@ -20,7 +20,8 @@ class SupplierCreateView(generic.CreateView):
 
 # supplier update/delete
 class SupplierUpdate(generic.UpdateView):
-    form_class = SupplierForm
+    queryset = Supplier.objects.all()
+    #form_class = SupplierForm
     fields = [
         "name",
         "email",

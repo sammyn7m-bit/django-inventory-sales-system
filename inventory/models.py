@@ -21,6 +21,7 @@ class Product(models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name="products")
     is_active = models.BooleanField(default=True)
     bought_at = models.DateTimeField(auto_now_add = True)
+    image = models.ImageField(upload_to ="products/", blank = True, null = True)
 
     @property
     def stock_on_hand(self):
