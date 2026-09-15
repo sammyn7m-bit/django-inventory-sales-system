@@ -1,303 +1,174 @@
-Django Inventory and Sales Management System
+# Django Inventory and Sales Management System
 
-A Django-based inventory and sales management web application for managing products, suppliers, customers, orders, and stock movements.
+A robust, enterprise-ready Django-based inventory and sales management web application designed to track products, suppliers, customers, orders, and stock movements seamlessly. This project highlights practical Django development workflows, rigorous transaction management, and automated stock safety business logic.
 
-The project demonstrates practical Django development, PostgreSQL integration, business logic, transactions, image uploads, and production deployment.
+Live Demo: https://onrender.com  
+(Hosted on Render's free tier. Please allow a few moments for the server to spin up if it has been inactive.)
 
-Live Demo
+---
 
-"View the Live Application" (https://django-inventory-sales-system-im1i.onrender.com/)
+## Features
 
-The live demo is currently hosted on Render's free tier, so it may take a short time to wake up after being inactive.
+### Inventory Management
+* **Dynamic Product Profiles:** Create, update, and manage products with structural parameters like SKUs, cost versus selling prices, and active/inactive toggle states.
+* **Supplier Tracking:** Associate detailed supplier information with relevant product catalogs.
+* **Intelligent Stock Control:** Set up custom low-stock thresholds and upload high-resolution product images.
+* **Movement-Based Ledger:** Calculate live stock balances historically using dynamic receipts and sales records rather than manual overrides.
 
-Features
+### Sales and Orders
+* **Customer Hub:** Dedicated customer profiles tracking contact details and historical activity.
+* **Transaction Engine:** Browse products, build client orders, and let the backend automatically compute precise totals.
+* **Safe Checkouts:** Database transactions guarantee that stock deductions only process when a payment clears, preventing negative stock states.
 
-Inventory Management
+---
 
-- Create and manage products
-- Manage suppliers
-- Track stock levels
-- Record stock receipts
-- Record stock sales
-- Configure low-stock thresholds
-- Upload product images
-- Activate or deactivate products
+## Tech Stack
 
-Sales and Orders
+| Technology | Purpose |
+| :--- | :--- |
+| **Python** | Core programming language |
+| **Django** | Robust backend web framework |
+| **PostgreSQL** | Relational database engine |
+| **Tailwind CSS** | Clean, modern UI styling |
+| **Gunicorn** | WSGI HTTP production server |
+| **WhiteNoise** | High-efficiency static file serving |
+| **Pillow** | Image processing utility |
 
-- Browse available products
-- View product details
-- Add products to orders
-- Create customer profiles
-- Create customer orders
-- Automatically calculate order totals
-- Process payments
-- Automatically deduct stock after payment
-- Prevent sales when stock is insufficient
+---
 
-Business Logic
+## Project Structure
 
-Stock operations are handled through dedicated service functions.
-
-The payment workflow uses database transactions to ensure stock deductions and order status changes are handled safely.
-
-Tech Stack
-
-Technology| Purpose
-Python| Programming language
-Django| Web framework
-PostgreSQL| Database
-HTML5| Frontend structure
-Django Templates| Server-side rendering
-Tailwind CSS| UI styling
-Gunicorn| Production application server
-WhiteNoise| Static file serving
-Pillow| Image processing
-python-dotenv| Environment variables
-dj-database-url| Database configuration
-
-Project Structure
-
+```text
 django-inventory-sales-system/
 │
-├── core/
+├── core/                  # Project configuration directory
 │   ├── settings.py
 │   ├── urls.py
-│   ├── wsgi.py
-│   └── ...
+│   └── wsgi.py
 │
-├── inventory/
-│   ├── models.py
-│   ├── forms.py
-│   ├── services.py
+├── inventory/             # Inventory engine application
+│   ├── models.py          # Supplier, Product, StockMovement
+│   ├── services.py        # Dedicated stock operational functions
 │   ├── views.py
-│   ├── urls.py
-│   └── migrations/
+│   └── urls.py
 │
-├── sales/
-│   ├── models.py
-│   ├── forms.py
-│   ├── services.py
+├── sales/                 # Customer and billing application
+│   ├── models.py          # Customer, Order, OrderItem
+│   ├── services.py        # Safe payment workflow processing
 │   ├── views.py
-│   ├── urls.py
-│   └── migrations/
+│   └── urls.py
 │
-├── templates/
+├── templates/             # Global HTML layouts & structural base
 │   └── base.html
 │
 ├── manage.py
 ├── requirements.txt
-├── .gitignore
 └── README.md
+```
 
-Core Models
+---
 
-Inventory
+## Core Data Models
 
-Supplier
+### Inventory Domain
+* **Supplier:** Name, Email, Phone
+* **Product:** Name, SKU, Cost Price, Selling Price, Low-Stock Threshold, Description, Supplier, Product Image, Active Status
+* **StockMovement:** Product, Movement Type (Receipt/Sale), Quantity Change, Note
 
-Stores:
+### Sales Domain
+* **Customer:** Name, Phone, Email, Address
+* **Order:** Customer, Order Date, Status
+* **OrderItem:** Order, Product, Quantity, Unit Price
 
-- Name
-- Email
-- Phone
+---
 
-Product
+## Installation and Setup
 
-Stores:
-
-- Name
-- SKU
-- Cost price
-- Selling price
-- Low-stock threshold
-- Description
-- Supplier
-- Product image
-- Active status
-
-StockMovement
-
-Records:
-
-- Product
-- Movement type
-- Quantity change
-- Note
-
-Stock is calculated from stock movements instead of manually storing a stock balance.
-
-Sales
-
-Customer
-
-Stores:
-
-- Name
-- Phone
-- Email
-- Address
-
-Order
-
-Stores:
-
-- Customer
-- Order date
-- Status
-
-OrderItem
-
-Stores:
-
-- Order
-- Product
-- Quantity
-- Unit price
-
-Order totals are calculated from individual order items.
-
-Installation and Setup
-
-1. Clone the repository
-
-Using HTTPS:
-
-git clone https://github.com/sammyn7m-bit/django-inventory-sales-system.git
-
-Enter the project directory:
-
+### 1. Clone and Enter Repository
+```bash
+git clone https://github.com
 cd django-inventory-sales-system
+```
 
-2. Create a virtual environment
-
+### 2. Configure Virtual Environment
+```bash
+# Create environment
 python -m venv venv
 
-Activate it:
-
-Windows:
-
+# Activate (Windows)
 venv\Scripts\activate
 
-macOS/Linux:
-
+# Activate (macOS/Linux)
 source venv/bin/activate
+```
 
-3. Install dependencies
-
+### 3. Install Required Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-4. Configure environment variables
-
-Create a ".env" file in the project root:
-
-SECRET_KEY=your-secret-key
+### 4. Set Up Environment Variables
+Create a `.env` file in the project root directory:
+```env
+SECRET_KEY=your-fallback-secret-key-here
 DEBUG=True
-
 DB_NAME=inventory_db
 DB_USER=inventory_user
-DB_PASSWORD=your-password
+DB_PASSWORD=your-secure-password
 DB_HOST=127.0.0.1
 DB_PORT=5432
+```
+> Warning: The `.env` file containing local configurations and production secrets is ignored by Git and should never be committed to source control.
 
-Never commit your ".env" file or production secrets to GitHub.
-
-5. Run database migrations
-
+### 5. Initialize the Database
+```bash
 python manage.py migrate
+```
 
-6. Create an admin account
-
+### 6. Administrative Setup and Launch
+```bash
+# Create an admin user account
 python manage.py createsuperuser
 
-7. Start the development server
-
+# Boot up the local runtime environment
 python manage.py runserver
+```
+Visit the local server in your browser at: `http://127.0.0`
 
-Open the application at:
+---
 
-"http://127.0.0.1:8000/" (http://127.0.0.1:8000/)
+## Production Deployment
 
-Database
+The project is pre-configured out-of-the-box for cloud hosting using:
+* **Gunicorn** to process application tasks concurrently.
+* **WhiteNoise** to serve production assets directly from Django.
+* **Environment-level separation** utilizing `DATABASE_URL` connections.
 
-The application uses PostgreSQL.
-
-Local development is configured using PostgreSQL environment variables, while production can use a PostgreSQL "DATABASE_URL".
-
-The repository includes Django migrations, so after cloning the project you only need to run:
-
-python manage.py migrate
-
-Security
-
-Sensitive configuration is stored using environment variables.
-
-The following are excluded from Git:
-
-.env
-media/
-staticfiles/
-__pycache__/
-*.pyc
-
-Production Deployment
-
-The application is configured for production deployment using:
-
-- Gunicorn
-- WhiteNoise
-- PostgreSQL
-- Environment variables
-- Django production settings
-
-Production start command:
-
-gunicorn core.wsgi:application
-
-Collect static files:
-
+### Key Deployment Tasks
+```bash
+# Static asset compilation
 python manage.py collectstatic --noinput
 
-What This Project Demonstrates
+# Production runtime entry point
+gunicorn core.wsgi:application
+```
 
-This project demonstrates practical experience with:
+---
 
-- Django models and relationships
-- Class-based views
-- Django forms
-- CRUD operations
-- PostgreSQL
-- Service-layer business logic
-- Database transactions
-- Inventory management
-- Order processing
-- Payment workflows
-- Image uploads
-- Static file handling
-- Environment-based configuration
-- Production deployment
+## Future Improvements
+* [ ] Role-Based Access Control (RBAC) and user authentication profiles.
+* [ ] Multi-product cart optimizations per single order checkout.
+* [ ] Rich analytics dashboard featuring real-time sales curves and inventory velocity graphs.
+* [ ] Low-stock automated email or SMS notifications.
+* [ ] Advanced server-side search querying, filtering, and pagination.
 
-Future Improvements
+---
 
-- User authentication and roles
-- Admin dashboard
-- Sales and inventory statistics
-- Multiple products per order
-- Order history
-- Sales reports
-- Low-stock alerts
-- Search and filtering
-- Pagination
-- Improved media storage
+## Author
 
-Author
+**Sammy Njuguna**  
+*Computer Science Student and Backend Developer*
 
-Sammy Njuguna
+* **GitHub:** [@sammyn7m-bit](https://github.com)
+* **Project Link:** [django-inventory-sales-system](https://github.com/django-inventory-sales-system)
 
-Computer Science Student | Backend Developer
-
-GitHub: "https://github.com/sammyn7m-bit" (https://github.com/sammyn7m-bit)
-
-Project Repository: "https://github.com/sammyn7m-bit/django-inventory-sales-system" (https://github.com/sammyn7m-bit/django-inventory-sales-system)
-
-Live Demo: "https://django-inventory-sales-system-im1i.onrender.com/" (https://django-inventory-sales-system-im1i.onrender.com/)
