@@ -2,7 +2,7 @@
 
 A robust, enterprise-ready Django-based inventory and sales management web application designed to track products, suppliers, customers, orders, and stock movements seamlessly. This project highlights practical Django development workflows, rigorous transaction management, and automated stock safety business logic.
 
-Live Demo: https://onrender.com  
+Live Demo: https://django-inventory-sales-system-im1i.onrender.com
 (Hosted on Render's free tier. Please allow a few moments for the server to spin up if it has been inactive.)
 
 ---
@@ -170,5 +170,5 @@ gunicorn core.wsgi:application
 *Computer Science Student and Backend Developer*
 
 * **GitHub:** [@sammyn7m-bit](https://github.com)
-* **Project Link:** [django-inventory-sales-system](https://github.com/django-inventory-sales-system)
+* **Project Link:** [django-inventory-sales-system](https://github.com/sammyn7m-bit/django-inventory-sales-system)
 
