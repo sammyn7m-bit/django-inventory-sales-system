@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}Products | Stock&Sales Co.{% endblock %}
@@ -27,12 +28,13 @@
             <!-- Product Image -->
             <div class="h-64 w-full bg-gray-100 overflow-hidden">
 
-                {% if product.image %}
+                {% if product.image_path %}
 
                     <img
-                        src="{{ product.image.url }}"
+                        src="https://cdn.openinary.dev/b/bd1f316c-9038-4494-bf33-be7bc88795e6/t/{{ product.image_path }}"
                         alt="{{ product.name }}"
                         class="w-full h-full object-cover"
+                        loading="lazy"
                     >
 
                 {% else %}
@@ -134,3 +136,4 @@
 </div>
 
 {% endblock %}
+
