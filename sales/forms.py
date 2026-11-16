@@ -2,6 +2,7 @@ from django import forms
 
 from .models import Customer
 
+
 # get customer details 
 class CustomerForm(forms.ModelForm):
     class Meta:

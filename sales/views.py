@@ -1,11 +1,12 @@
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
-from django.contrib import messages
 
-from .models import Order, Customer, OrderItem
-from .services import pay_order
 from inventory.models import Product
+
 from .forms import CustomerForm
+from .models import Customer, Order, OrderItem
+from .services import pay_order
 
 
 # get customer details

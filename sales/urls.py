@@ -1,12 +1,12 @@
 from django.urls import path
 
 from .views import (
-    CustomerCreateView,
-    ProductCatalogView,
-    ProductDetailView,
     AddToOrderView,
+    CustomerCreateView,
     OrderCreateView,
     OrderDetailView,
+    ProductCatalogView,
+    ProductDetailView,
     pay,
 )
 
@@ -22,12 +22,12 @@ urlpatterns = [
         name="product_catalog",
     ),
     path(
-        "products/<int:pk>/",
+        "catalog/products/<int:pk>/",
         ProductDetailView.as_view(),
         name="product_detail",
     ),
     path(
-        "products/<int:pk>/add-to-order/",
+        "catalog/products/<int:pk>/add-to-order/",
         AddToOrderView.as_view(),
         name="add_to_order",
     ),
