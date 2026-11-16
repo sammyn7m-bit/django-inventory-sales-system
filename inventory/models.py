@@ -11,17 +11,37 @@ class Supplier(models.Model):
         return self.name
 
 
+# products model
 class Product(models.Model):
-    name = models.CharField(max_length = 200)
-    sku = models.CharField(max_length = 100,unique = True, verbose_name = 'stock keeping unit')
-    cost_price = models.DecimalField(max_digits = 10, decimal_places = 2)
-    selling_price = models.DecimalField(max_digits = 10, decimal_places = 2)
-    low_stock_threshold = models.PositiveIntegerField(default = 5)
-    description = models.TextField(blank = True)
-    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name="products")
+    name = models.CharField(max_length=200)
+    sku = models.CharField(
+        max_length=100,
+        unique=True,
+        verbose_name="stock keeping unit"
+    )
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2)
+    selling_price = models.DecimalField(max_digits=10, decimal_places=2)
+    low_stock_threshold = models.PositiveIntegerField(default=5)
+    description = models.TextField(blank=True)
+    supplier = models.ForeignKey(
+        Supplier,
+        on_delete=models.PROTECT,
+        related_name="products"
+    )
     is_active = models.BooleanField(default=True)
-    bought_at = models.DateTimeField(auto_now_add = True)
-    image = models.ImageField(upload_to ="products/", blank = True, null = True)
+    bought_at = models.DateTimeField(auto_now_add=True)
+
+    image = models.ImageField(
+        upload_to="products/",
+        blank=True,
+        null=True
+    )
+
+    image_path = models.CharField(
+        max_length=500,
+        blank=True,
+        default=""
+    )
 
     @property
     def stock_on_hand(self):
@@ -30,6 +50,7 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} ({self.sku})"
 
+# check sales aof stock
 class StockMovement(models.Model):
     RECEIPT = "RECEIPT"
     SALE = "SALE"

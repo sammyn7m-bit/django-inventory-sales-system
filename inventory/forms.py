@@ -38,20 +38,25 @@ class SupplierForm(forms.ModelForm):
 
 
 class ProductForm(forms.ModelForm):
+
+    image_path = forms.CharField(
+    required=False,
+    max_length=500,
+    widget=forms.HiddenInput()
+ )
     class Meta:
         model = Product
         fields = [
-            "name",
-            "sku",
-            "cost_price",
-            "selling_price",
-            "low_stock_threshold",
-            "description",
-            "image",
-            "supplier",
-            "is_active",
-        ]
-
+          "name",
+          "sku",
+          "cost_price",
+          "selling_price",
+          "low_stock_threshold",
+          "description",
+          "supplier",
+          "is_active",
+          "image_path",
+]
         widgets = {
             "name": forms.TextInput(
                 attrs={
@@ -110,6 +115,26 @@ class ProductForm(forms.ModelForm):
                 }
             ),
         }
+
+
+    def clean_image_path(self):
+        image_path = self.cleaned_data.get("image_path", "")
+
+        if not image_path:
+            return ""
+
+        if (
+         image_path.startswith("/")
+         or "://" in image_path
+         or "\\" in image_path
+         or ".." in image_path
+         or not image_path.startswith("products/")
+    ):
+         raise forms.ValidationError(
+            "Invalid product image path."
+         )
+
+        return image_path
 
     def clean(self):
         cleaned_data = super().clean()

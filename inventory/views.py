@@ -1,10 +1,21 @@
-from django.shortcuts import render
-from django.shortcuts import redirect, get_object_or_404
+import logging
+
+import requests
+from django.core.exceptions import ImproperlyConfigured
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from .models import Supplier, Product
 from django.views import generic
-from .services import add_stock, sell_stock
+from django.views.decorators.http import require_POST
+
 from .forms import ProductForm, SupplierForm
+from .models import Product, Supplier
+from .openinary import create_upload_signature
+from .services import add_stock, sell_stock
+
+logger = logging.getLogger(__name__)
+
+
 
 # supplier list
 class SupplierListView(generic.ListView):
@@ -93,3 +104,44 @@ class SellStockView(generic.View):
         sell_stock(product, qty, note)
 
         return redirect("product-detail", pk=product.pk)
+
+
+@require_POST
+def openinary_sign(request):
+    # Origin check, not authentication.
+    fetch_site = request.headers.get("Sec-Fetch-Site")
+
+    if fetch_site not in ("same-origin", "same-site"):
+        return JsonResponse(
+            {"error": "Invalid request origin."},
+            status=403,
+        )
+
+    # TODO: Require an authenticated and authorized user
+    # once authentication is implemented.
+
+    try:
+        signature = create_upload_signature()
+
+        return JsonResponse(signature)
+
+    except ImproperlyConfigured:
+        logger.exception("Openinary API key is missing.")
+        return JsonResponse(
+            {"error": "Image upload service is not configured."},
+            status=503,
+        )
+
+    except requests.RequestException:
+        logger.exception("Openinary signing request failed.")
+        return JsonResponse(
+            {"error": "Could not prepare image upload."},
+            status=502,
+        )
+
+    except (RuntimeError, KeyError, ValueError):
+        logger.exception("Invalid Openinary signing response.")
+        return JsonResponse(
+            {"error": "Invalid response from image storage."},
+            status=502,
+        )

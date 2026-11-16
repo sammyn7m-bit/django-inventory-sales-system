@@ -1,89 +1,373 @@
+
 {% extends "base.html" %}
 
 {% block title %}Add Product | Awesome Electronics{% endblock %}
 
 {% block content %}
 
-<div class="max-w-3xl mx-auto"><div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">
-        Add Product
-    </h1>
+<div class="max-w-3xl mx-auto">
 
-    <p class="mt-2 text-sm text-gray-500">
-        Add a new product to your inventory.
-    </p>
-</div>
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            Add Product
+        </h1>
+        <p class="mt-2 text-sm text-gray-500">
+            Add a new product to your inventory.
+        </p>
+    </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 
-    <form method="POST" enctype="multipart/form-data">
+        <form method="POST" id="product-form">
 
-        {% csrf_token %}
+            {% csrf_token %}
 
-        {% if form.non_field_errors %}
-            <div class="mb-6 p-4 rounded-lg bg-red-50
-                        border border-red-200 text-red-700 text-sm">
+            {% if form.non_field_errors %}
+                <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
 
-                {{ form.non_field_errors }}
+            {% for field in form %}
+                {% if field.is_hidden %}
+                    {{ field }}
+                {% else %}
+                    <div class="mb-5">
 
-            </div>
-        {% endif %}
+                        <label for="{{ field.id_for_label }}"
+                               class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ field.label }}
+                        </label>
 
-        {% for field in form %}
+                        {{ field }}
 
-            <div class="mb-5">
+                        {% if field.help_text %}
+                            <p class="mt-1 text-xs text-gray-500">
+                                {{ field.help_text }}
+                            </p>
+                        {% endif %}
 
-                <label for="{{ field.id_for_label }}"
-                       class="block text-sm font-medium
-                              text-gray-700 mb-2">
+                        {% for error in field.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
 
-                    {{ field.label }}
+                    </div>
+                {% endif %}
+            {% endfor %}
 
+            <div class="mb-6 border-t border-gray-200 pt-5">
+
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Product image
                 </label>
 
-                {{ field }}
+                <input
+                    type="file"
+                    id="product-image"
+                    accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                    class="block w-full text-sm text-gray-600
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-lg file:border-0
+                           file:bg-blue-50 file:text-blue-700
+                           hover:file:bg-blue-100"
+                >
 
-                {% if field.help_text %}
-                    <p class="mt-1 text-xs text-gray-500">
-                        {{ field.help_text }}
-                    </p>
-                {% endif %}
+                <p class="mt-2 text-xs text-gray-500">
+                    Supported formats: JPG, PNG, WebP, AVIF and GIF.
+                </p>
 
-                {% for error in field.errors %}
-                    <p class="mt-1 text-sm text-red-600">
-                        {{ error }}
-                    </p>
-                {% endfor %}
+                <button
+                    type="button"
+                    id="upload-button"
+                    class="mt-4 px-4 py-2 bg-gray-800
+                           hover:bg-gray-900 text-white
+                           text-sm rounded-lg"
+                >
+                    Upload image
+                </button>
+
+                <div id="upload-progress-container" class="hidden mt-4">
+
+                    <div class="flex justify-between text-xs text-gray-600 mb-2">
+                        <span id="upload-status">Preparing upload...</span>
+                        <span id="upload-percent">0%</span>
+                    </div>
+
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                            id="upload-progress"
+                            class="bg-blue-600 h-2 rounded-full"
+                            style="width: 0%"
+                        ></div>
+                    </div>
+
+                </div>
+
+                <div id="upload-result" class="hidden mt-4 text-sm"></div>
+
+                <img
+                    id="uploaded-preview"
+                    class="hidden mt-4 max-h-48 rounded-lg border border-gray-200"
+                    alt="Uploaded product image"
+                >
 
             </div>
 
-        {% endfor %}
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
 
-        <div class="flex items-center justify-between
-                    pt-4 border-t border-gray-200">
+                <a href="{% url 'product_list' %}"
+                   class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900">
+                    Cancel
+                </a>
 
-            <a href="{% url 'product_list' %}"
-               class="px-4 py-2 text-sm font-medium
-                      text-gray-600 hover:text-gray-900">
+                <button
+                    type="submit"
+                    id="submit-button"
+                    class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700
+                           text-white text-sm font-medium rounded-lg transition"
+                >
+                    Add Product
+                </button>
 
-                Cancel
+            </div>
 
-            </a>
+        </form>
 
-            <button type="submit"
-                    class="px-5 py-2.5
-                           bg-blue-600 hover:bg-blue-700
-                           text-white text-sm font-medium
-                           rounded-lg transition">
-
-                Add Product
-
-            </button>
-
-        </div>
-
-    </form>
+    </div>
 
 </div>
 
-</div>{% endblock %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("product-form");
+    const fileInput = document.getElementById("product-image");
+    const uploadButton = document.getElementById("upload-button");
+    const submitButton = document.getElementById("submit-button");
+
+    const imagePathInput = document.getElementById("id_image_path");
+
+    const progressContainer = document.getElementById("upload-progress-container");
+    const progressBar = document.getElementById("upload-progress");
+    const progressPercent = document.getElementById("upload-percent");
+    const uploadStatus = document.getElementById("upload-status");
+
+    const uploadResult = document.getElementById("upload-result");
+    const preview = document.getElementById("uploaded-preview");
+
+    const API_HOST = "https://cdn.openinary.dev";
+
+    const DELIVERY_BASE =
+        "https://cdn.openinary.dev/b/bd1f316c-9038-4494-bf33-be7bc88795e6";
+
+    const SIGN_URL = "{% url 'openinary_sign' %}";
+
+    const csrfToken = document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+    ).value;
+
+    let uploading = false;
+
+    function showResult(message, success) {
+        uploadResult.textContent = message;
+        uploadResult.classList.remove(
+            "hidden",
+            "text-red-600",
+            "text-green-600"
+        );
+
+        uploadResult.classList.add(
+            success ? "text-green-600" : "text-red-600"
+        );
+    }
+
+    function updateProgress(percent) {
+        progressBar.style.width = percent + "%";
+        progressPercent.textContent = percent + "%";
+    }
+
+    function uploadFile(file) {
+
+        return new Promise((resolve, reject) => {
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.open("POST", API_HOST + "/upload");
+
+            const data = new FormData();
+
+            data.append("files", file);
+            data.append("folder", uploadSignature.folder);
+            data.append("signature", uploadSignature.signature);
+            data.append("expires", uploadSignature.expires);
+
+            xhr.upload.addEventListener("progress", function (event) {
+                if (event.lengthComputable) {
+                    const percent = Math.round(
+                        (event.loaded / event.total) * 100
+                    );
+
+                    updateProgress(percent);
+                }
+            });
+
+            xhr.addEventListener("load", function () {
+
+                let response;
+
+                try {
+                    response = JSON.parse(xhr.responseText);
+                } catch {
+                    reject(new Error("Invalid upload response."));
+                    return;
+                }
+
+                if (xhr.status < 200 || xhr.status >= 300) {
+                    reject(new Error(
+                        response.message || "Image upload failed."
+                    ));
+                    return;
+                }
+
+                if (
+                    !response.success ||
+                    !Array.isArray(response.files) ||
+                    !response.files[0] ||
+                    typeof response.files[0].path !== "string"
+                ) {
+                    reject(new Error("Openinary did not return an image path."));
+                    return;
+                }
+
+                resolve(response.files[0].path);
+            });
+
+            xhr.addEventListener("error", function () {
+                reject(new Error("Network error during image upload."));
+            });
+
+            xhr.send(data);
+        });
+    }
+
+    async function requestSignature() {
+
+        const response = await fetch(SIGN_URL, {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "Accept": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.error || "Could not prepare image upload."
+            );
+        }
+
+        return data;
+    }
+
+    let uploadSignature = null;
+
+    uploadButton.addEventListener("click", async function () {
+
+        const file = fileInput.files[0];
+
+        if (!file) {
+            showResult("Please select an image first.", false);
+            return;
+        }
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/avif",
+            "image/gif"
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            showResult("Unsupported image format.", false);
+            return;
+        }
+
+        uploading = true;
+        uploadButton.disabled = true;
+        submitButton.disabled = true;
+
+        uploadButton.textContent = "Uploading...";
+        progressContainer.classList.remove("hidden");
+        preview.classList.add("hidden");
+        uploadResult.classList.add("hidden");
+
+        try {
+
+            uploadStatus.textContent = "Preparing secure upload...";
+            uploadSignature = await requestSignature();
+
+            uploadStatus.textContent = "Uploading image...";
+
+            const path = await uploadFile(file);
+
+            imagePathInput.value = path;
+
+            preview.src = DELIVERY_BASE + "/t/" + path;
+            preview.classList.remove("hidden");
+
+            preview.onerror = function () {
+                showResult(
+                    "Upload succeeded, but the delivered image could not be loaded.",
+                    false
+                );
+            };
+
+            showResult("Image uploaded successfully.", true);
+
+            uploadStatus.textContent = "Upload complete";
+            updateProgress(100);
+
+        } catch (error) {
+
+            imagePathInput.value = "";
+
+            showResult(error.message, false);
+
+        } finally {
+
+            uploading = false;
+            uploadButton.disabled = false;
+            submitButton.disabled = false;
+            uploadButton.textContent = "Upload image";
+
+        }
+    });
+
+    form.addEventListener("submit", function (event) {
+
+        if (uploading) {
+            event.preventDefault();
+            return;
+        }
+
+        if (fileInput.files.length && !imagePathInput.value) {
+            event.preventDefault();
+            showResult(
+                "Please upload the selected image before saving the product.",
+                false
+            );
+        }
+
+    });
+
+});
+</script>
+
+{% endblock %}
+
