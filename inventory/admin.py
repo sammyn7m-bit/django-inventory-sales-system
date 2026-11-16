@@ -11,7 +11,7 @@ class SupplierAdmin(admin.ModelAdmin):
 class StockMovementInline(admin.TabularInline):
     model = StockMovement
     extra = 0
-    readonly_fields = ("movement_type", "quantity_change", "note")
+    readonly_fields = ("movement_date", "movement_type", "qty_change", "note")
     can_delete = False
 
 
@@ -23,10 +23,11 @@ class ProductAdmin(admin.ModelAdmin):
         "supplier",
         "cost_price",
         "selling_price",
+        "stock_on_hand",
         "low_stock_threshold",
         "is_active",
     )
-    list_filter = ("is_active", "supplier")
+    list_filter = ("is_active", "supplier", "bought_at")
     search_fields = ("name", "sku", "description")
     list_editable = ("selling_price", "is_active")
     inlines = [StockMovementInline]
@@ -34,7 +35,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(StockMovement)
 class StockMovementAdmin(admin.ModelAdmin):
-    list_display = ("product", "movement_type", "quantity_change", "note")
-    list_filter = ("movement_type", "product")
+    list_display = ("product", "movement_type", "qty_change", "movement_date", "note")
+    list_filter = ("movement_type", "movement_date", "product")
     search_fields = ("product__name", "product__sku", "note")
 
