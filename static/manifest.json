@@ -1,6 +1,6 @@
 {
-  "name": "Django Inventory & Sales System",
-  "short_name": "InventoryApp",
+  "name": "Awesome Electronics",
+  "short_name": "Awesome"
   "description": "Manage products, suppliers, orders, and stock movements.",
   "start_url": "/",
   "display": "standalone",
