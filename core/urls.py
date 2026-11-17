@@ -18,11 +18,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # products endpoints
     path("products/", include('inventory.urls')),
+    # sales endpoints
     path('', include('sales.urls')),
+    # pwa endpoints
+    path(
+        'sw.js',
+        TemplateView.as_view(
+            template_name='sw.js',content_type='application/javascript' ),name='sw.js'),
 ]
 urlpatterns += static(
     settings.MEDIA_URL,

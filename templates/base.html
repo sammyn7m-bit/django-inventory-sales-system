@@ -6,6 +6,15 @@
     <title>{% block title %}Business Workspace{% endblock %}</title>
    
     <script src="https://cdn.tailwindcss.com"></script>
+<!-- load static files -->
+{% load static %}
+<link rel="manifest" href="{% static 'manifest.json' %}">
+<meta name="theme-color" content="#1e293b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="{% static 'images/icons/icon-192x192.png' %}">
+
+
 </head>
 <body class="bg-gray-50 font-sans text-gray-900 flex flex-col min-h-screen">
 
@@ -64,6 +73,16 @@
     <footer class="bg-gray-800 text-gray-400 text-center py-4 text-xs mt-auto">
         &copy; {% now "Y" %} Awesome Electronics.
     </footer>
+<!-- register service worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((reg) => console.log('Service Worker registered:', reg.scope))
+        .catch((err) => console.error('Service Worker failed:', err));
+    });
+  }
+</script>
 
 </body>
 </html>
